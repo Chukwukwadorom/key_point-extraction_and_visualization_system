@@ -1,0 +1,4 @@
+STATIC_IMAGE_MODE = False
+MODEL_COMPLEXITY = 1  # Model complexity: 0 (simple) to 2 (complex)
+ENABLE_SEGMENTATION = False 
+MIN_DETECTION_CONFIDENCE = 0.5
