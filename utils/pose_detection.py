@@ -2,6 +2,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 from utils.image_utils import load_image
+from utils.keypoints import skeleton_connections
 from config import STATIC_IMAGE_MODE, MODEL_COMPLEXITY, ENABLE_SEGMENTATION, MIN_DETECTION_CONFIDENCE
 
 
@@ -23,13 +24,8 @@ class PoseDetection:
                             enable_segmentation=enable_segmentation,
                             min_detection_confidence= min_detection_confidence)
 
-    def get_pose(self, img_path, draw=True, landmark=False):
-
-        if landmark:
-            #no image was passed only landmark. will circle back here
-            pass
-
-
+    def get_pose(self, img_path, draw=True):
+     
         img = load_image(img_path)
     
         # Get the height and width of the image. convert to format used by cv2
@@ -64,6 +60,56 @@ class PoseDetection:
                 cv2.line(black_canvas, nose_coords, midpoint_coords, (255, 255, 255), 2)  # Green line with thickness 2
 
         return black_canvas 
+    
+    def draw_keypoints_on_canvas(self, keypoints, canvas_size=(400, 500)):
+        """
+        Draw keypoints on a black canvas without needing an image.
+
+        :param keypoints: List of [x, y] coordinates for each keypoint.
+        :param canvas_size: Tuple specifying the size (height, width) of the canvas.
+        :return: np.ndarray representing the canvas with drawn keypoints and connections.
+        """
+        # Creating a black canvas
+        canvas = np.zeros((*canvas_size, 3), dtype=np.uint8)
+
+
+        # Normalize keypoints
+        max_x, max_y = canvas_size[1], canvas_size[0]  # Width, Height
+        normalized_keypoints = []
+        for x, y in keypoints:
+            normalized_x = int(x * max_x)  
+            normalized_y = int(y * max_y)  
+            normalized_keypoints.append((normalized_x, normalized_y))
+
+        # Draw landmarks on the canvas
+        for (x, y) in normalized_keypoints:
+            cv2.circle(canvas, (x, y), 5, (0, 255, 0), -1)  # Draw keypoints as circles
+
+        # Drawing skeleton by connecting the keypoints
+        for connection in skeleton_connections:
+            id1, id2 = connection
+            if id1 < len(normalized_keypoints) and id2 < len(normalized_keypoints):
+                x1, y1 = normalized_keypoints[id1]
+                x2, y2 = normalized_keypoints[id2]
+                cv2.line(canvas, (x1, y1), (x2, y2), (255, 255, 255), 2)  # White line with thickness 2
+
+        ## solving the neck problem:
+        # Now connect the nose to the midpoint of shoulders
+        nose = normalized_keypoints[0]  
+        left_shoulder = normalized_keypoints[11]  
+        right_shoulder = normalized_keypoints[12]  
+
+        # Calculate midpoint between left and right shoulder
+        midpoint_x = (left_shoulder[0] + right_shoulder[0]) // 2
+        midpoint_y = (left_shoulder[1] + right_shoulder[1]) // 2
+        midpoint_coords = (midpoint_x, midpoint_y)
+
+        # Draw the line from the nose to the midpoint of the shoulders
+        cv2.line(canvas, nose, midpoint_coords, (255, 255, 255), 2) 
+        
+        
+        return canvas
+
 
     def get_positions(self, img, draw = False):
         positions = []
