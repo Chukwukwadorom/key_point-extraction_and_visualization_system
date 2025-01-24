@@ -39,7 +39,14 @@ This is a Flask-based application that performs keypoint extraction and visualiz
 
 ### Option 2: Running with Python
 
-If you prefer to run the application without Docker, follow these steps:
+
+If you'd like to run the application directly without using Docker, follow these steps:
+
+### 1. Set Up a Virtual Environment
+It's recommended to create and activate a virtual environment to isolate dependencies:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 1. Install dependencies:
     ```bash
@@ -65,15 +72,8 @@ If you prefer to run the application without Docker, follow these steps:
     alternatively if you have landmarks you can pass them as json data like so:
   Example request:
       ```bash
-      curl -X POST "http://localhost:5000/process-landmarks" \
-      -H "Content-Type: application/json" \
-      -d '{
-            "landmarks": [
-              {"x": 0.5, "y": 0.5},
-              {"x": 0.4, "y": 0.6},
-              ...
-            ]
-          }'
+      curl -X POST "http://127.0.0.1:5000/process-landmarks" -H "Content-Type: application/json" -d '{"landmarks":[{"x":0.5,"y":0.5},{"x":0.4,"y":0.6},{"x":0.45,"y":0.55}]} ' --output downloaded_image.jpg
+
 
 *Response**: The API will return a downloadable image containing the keypoints and skeletal drawing in the directory from which you made the call.
     - Example response:
@@ -83,13 +83,6 @@ If you prefer to run the application without Docker, follow these steps:
       100 15746  100 15701  100    45   326k    957 --:--:-- --:--:-- --:--:--  327k
       ```
 
-### GET /download/<image_id>
-- **Description**: Downloads the keypoint visualization image.
-- **Request**: Send a GET request to download the generated image.
-    - Example request:
-      ```bash
-      curl -O http://localhost:5000/download/12345
-      ```
 
 ## Dockerize the App
 
