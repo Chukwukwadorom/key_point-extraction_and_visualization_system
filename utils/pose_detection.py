@@ -91,21 +91,26 @@ class PoseDetection:
             if id1 < len(normalized_keypoints) and id2 < len(normalized_keypoints):
                 x1, y1 = normalized_keypoints[id1]
                 x2, y2 = normalized_keypoints[id2]
-                cv2.line(canvas, (x1, y1), (x2, y2), (255, 255, 255), 2)  # White line with thickness 2
+                cv2.line(canvas, (x1, y1), (x2, y2), (255, 255, 255), 2)  
 
         ## solving the neck problem:
         # Now connect the nose to the midpoint of shoulders
-        nose = normalized_keypoints[0]  
-        left_shoulder = normalized_keypoints[11]  
-        right_shoulder = normalized_keypoints[12]  
+        try:
+            nose = normalized_keypoints[0]  
+            left_shoulder = normalized_keypoints[11]  
+            right_shoulder = normalized_keypoints[12]
+        except:
+            print("Error: Missing keypoints for nose or shoulders:")
 
-        # Calculate midpoint between left and right shoulder
-        midpoint_x = (left_shoulder[0] + right_shoulder[0]) // 2
-        midpoint_y = (left_shoulder[1] + right_shoulder[1]) // 2
-        midpoint_coords = (midpoint_x, midpoint_y)
+        else:  
 
-        # Draw the line from the nose to the midpoint of the shoulders
-        cv2.line(canvas, nose, midpoint_coords, (255, 255, 255), 2) 
+            # Calculate midpoint between left and right shoulder
+            midpoint_x = (left_shoulder[0] + right_shoulder[0]) // 2
+            midpoint_y = (left_shoulder[1] + right_shoulder[1]) // 2
+            midpoint_coords = (midpoint_x, midpoint_y)
+
+            # Draw the line from the nose to the midpoint of the shoulders
+            cv2.line(canvas, nose, midpoint_coords, (255, 255, 255), 2) 
         
         
         return canvas
