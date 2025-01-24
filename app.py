@@ -34,7 +34,7 @@ def process_image():
 
         # Returning the image as a downloadable file
         return send_file(processed_img_bytes, 
-                         as_attachment=True,  # This makes the file downloadable
+                         as_attachment=True,  
                          download_name="processed_image.jpg", 
                          mimetype='image/jpeg')  
 
