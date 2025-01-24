@@ -23,25 +23,31 @@ class PoseDetection:
                             enable_segmentation=enable_segmentation,
                             min_detection_confidence= min_detection_confidence)
 
-    def get_pose(self, img_path, draw=True):
+    def get_pose(self, img_path, draw=True, landmark=False):
+
+        if landmark:
+            #no image was passed only landmark. will circle back here
+            pass
+
 
         img = load_image(img_path)
     
-        # Get the height and width of the image
+        # Get the height and width of the image. convert to format used by cv2
         height, width, _ = img.shape
+        frame_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         # Creating a black canvas with the same size as the image
         black_canvas = np.zeros((height, width, 3), dtype=np.uint8)
 
 
-        frame_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
         self.result = self.pose.process(frame_rgb)
         if self.result.pose_landmarks:
             if draw:
                 mp_draw.draw_landmarks(black_canvas, self.result.pose_landmarks, mp_pose.POSE_CONNECTIONS)
                 
 
-                ##mediapipe doesnt landmark the neck so i calculated it
+                ##mediapipe doesnt landmark the neck so i calculated it using the mid point of the 2 sholders
                 nose = self.result.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE]
                 left_shoulder = self.result.pose_landmarks.landmark[mp_pose.PoseLandmark.LEFT_SHOULDER]
                 right_shoulder = self.result.pose_landmarks.landmark[mp_pose.PoseLandmark.RIGHT_SHOULDER]
