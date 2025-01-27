@@ -42,18 +42,18 @@ This is a Flask-based application that performs keypoint extraction and visualiz
 
 If you'd like to run the application directly without using Docker, follow these steps:
 
-### 1. Set Up a Virtual Environment
+1. Set Up a Virtual Environment
 It's recommended to create and activate a virtual environment to isolate dependencies:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-1. Install dependencies:
+2. Install dependencies:
     ```bash
     pip install -r requirements.txt
     ```
 
-2. Run the application:
+3. Run the application:
     ```bash
     python app.py
     ```
